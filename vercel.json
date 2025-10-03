@@ -14,10 +14,13 @@
                 "GET",
                 "POST",
                 "PUT",
-                "PATCH",
                 "DELETE",
                 "OPTIONS"
             ]
         }
-    ]
+    ],
+    "env": {
+        "DB_USER": "@coffee1234",
+        "DB_PASS": "@coffee1107"
+    }
 }
