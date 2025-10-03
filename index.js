@@ -1,11 +1,5 @@
 require('dotenv').config();
 
-// Debug Info
-console.log('=== DEBUG INFO ===');
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASS:', process.env.DB_PASS);
-console.log('==================');
-
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -13,13 +7,20 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://coffee-store-client-tawny-rho.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"]
+}));
+
+
 app.use(express.json());
 
-// Cluster URL
+// MongoDB connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.oeyfvq1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-
-console.log('Attempting to connect to MongoDB...');
 
 const client = new MongoClient(uri, {
     serverApi: {
@@ -77,9 +78,7 @@ async function run() {
                 const filter = { _id: new ObjectId(id) };
                 const options = { upsert: true };
                 const updatedCoffee = req.body;
-                const updatedDoc = {
-                    $set: updatedCoffee
-                };
+                const updatedDoc = { $set: updatedCoffee };
                 const result = await coffeesCollection.updateOne(filter, updatedDoc, options);
                 res.send(result);
             } catch (error) {
@@ -120,3 +119,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Coffee server is running on port ${port}`);
 });
+
+// Export for Vercel
+module.exports = app;
